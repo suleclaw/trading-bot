@@ -15,7 +15,6 @@ import time
 from datetime import datetime
 
 # Import the trading bot modules
-from trading_bot import CopyTradingEngine
 from wheel_strategy import WheelStrategy
 from alpaca_client import is_market_open, get_clock
 
@@ -88,20 +87,18 @@ def run_trading_cycle():
     clock = get_clock()
     log.info(f"Market: {'OPEN' if clock.is_open else 'CLOSED'}")
     
-    # ── Copy Trading ─────────────────────────────────────────────────────────
-    log.info("\n[COPY TRADING ENGINE]")
-    try:
-        engine = CopyTradingEngine()
-        engine.print_status()
-        engine.check_and_update_trailing_stops()
-    except Exception as e:
-        log.error(f"Copy trading error: {e}")
-    
     # ── Wheel Strategy ───────────────────────────────────────────────────────
     log.info("\n[WHEEL STRATEGY]")
     try:
         wheel = WheelStrategy()
         wheel.print_status()
+        # Run full wheel spin: check assignments, open CSPs, open covered calls
+        positions = wheel.get_positions()
+        symbols = [p.symbol for p in positions]
+        if symbols:
+            wheel.spin(symbols=symbols)
+        else:
+            log.info("No open positions — wheel idle. Add stocks to trade.")
     except Exception as e:
         log.error(f"Wheel strategy error: {e}")
     
