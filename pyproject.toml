@@ -1,0 +1,40 @@
+[project]
+name = "trading-bot"
+version = "0.1.0"
+description = "AI-powered stock trading bot with copy trading and wheel strategy via Alpaca Paper Trading"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Sule", email = "sule@ Suleclaw.ai"},
+]
+keywords = ["trading", "alpaca", "options", "wheel-strategy", "investing"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "alpaca-trade-api>=3.2.0",
+    "requests>=2.33.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false

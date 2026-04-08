@@ -1,0 +1,42 @@
+# Environment
+.env
+.venv/
+venv/
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Data files
+*.json
+!pyproject.json
+tracked_positions.json
+wheel_positions.json
+wheel_trades.json
+positions.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Credentials — NEVER commit .env files
+.python-version
+uv.lock
