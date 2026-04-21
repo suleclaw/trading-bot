@@ -277,12 +277,12 @@ def main():
 
     # ── Copy Trading ─────────────────────────────────────────────────────────
     log.info("\n[COPY TRADING]")
+    log.info("NOTE: Capitol Trades API is defunct (api.capitoltrades.com = NXDOMAIN).")
+    log.info("      Using simulated trade data. Real data requires a paid alternative source.")
     engine = CopyTradingEngine()
 
-    # Try to get real trades
+    # get_recent_trades_formatted() returns simulated data since the API is dead
     trades = get_recent_trades_formatted(limit=10)
-    if not trades or all(isinstance(t.get("politician"), str) and "simulated" not in str(t) for t in []):
-        pass  # Using real API when available
 
     engine.run(trades=trades, market_open=market_open)
 

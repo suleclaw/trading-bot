@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-Capitol Trades Fetcher — Get US politician stock trades
-Note: API blocked from cloud IPs. Run from home IP for real data.
+Capitol Trades Fetcher — Get US politician stock trades.
+
+NOTE (2026-04-15): The api.capitoltrades.com domain is defunct (NXDOMAIN).
+The API has been shut down. This module now uses simulated data only.
+Capitol Trades website (capitoltrades.com) is still live but offers no public API.
+Alternative data sources to investigate: Quiver Quantitative, OpenSecrets, or
+similar paid/politician-trading data providers.
 """
 
 import json
@@ -24,7 +29,9 @@ HEADERS = {
 def fetch_trades(limit: int = 20) -> list[dict]:
     """
     Fetch recent trades from all politicians.
-    Returns list of trade dicts.
+
+    Returns list of trade dicts. Since api.capitoltrades.com is defunct,
+    this always returns [] and the caller falls back to simulated data.
     """
     try:
         r = requests.get(
@@ -39,8 +46,12 @@ def fetch_trades(limit: int = 20) -> list[dict]:
             return trades
         log.warning(f"Capitol Trades returned {r.status_code}: {r.text[:200]}")
         return []
-    except requests.exceptions.ConnectionError:
-        log.debug("Capitol Trades unreachable (cloud IP blocked)")
+    except requests.exceptions.ConnectionError as e:
+        # Could be cloud IP block OR DNS failure (api.capitoltrades.com is defunct)
+        log.debug(f"Capitol Trades unreachable: {e}")
+        return []
+    except requests.exceptions.Timeout:
+        log.debug("Capitol Trades timed out")
         return []
     except Exception as e:
         log.error(f"Error fetching Capitol Trades: {e}")
@@ -150,20 +161,22 @@ def parse_trade(trade_data: dict) -> dict | None:
 def get_recent_trades_formatted(limit: int = 10) -> list[dict]:
     """
     Get recent trades as clean, formatted dicts.
-    Returns simulated data if API unreachable.
+    Returns simulated data (API is defunct).
     """
     raw_trades = fetch_trades(limit=limit)
-    
+
     trades = []
     for raw in raw_trades:
         parsed = parse_trade(raw)
         if parsed and parsed.get("symbol"):
             trades.append(parsed)
-    
+
     if trades:
+        log.info(f"Using {len(trades)} real trades from Capitol Trades API")
         return trades
-    
-    # Fallback: simulated trades (when API blocked)
+
+    # Fallback: simulated trades (API is defunct — api.capitoltrades.com returns NXDOMAIN)
+    log.info("Capitol Trades API unreachable/defunct — using simulated trade data")
     return get_simulated_trades(limit=limit)
 
 
